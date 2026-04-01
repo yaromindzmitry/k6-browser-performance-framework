@@ -91,7 +91,6 @@ npm run test:all       # All scenarios sequentially
 npm run report:slow    # Parse SLOW_REPORT entries from log
 npm run report:summary # Print per-locale summary
 ```
-
 ---
 
 ## SLOW_REPORT Log Parsing
