@@ -1,0 +1,17 @@
+{
+  "name": "k6-browser-performance-framework",
+  "version": "1.0.0",
+  "description": "Production-grade k6 Browser Mode performance testing framework for multi-locale web platforms",
+  "scripts": {
+    "test:home":    "k6 run scripts/scenarios/home_page.js",
+    "test:search":  "k6 run scripts/scenarios/search_page.js",
+    "test:listing": "k6 run scripts/scenarios/listing_page.js",
+    "test:all":     "npm run test:home && npm run test:search && npm run test:listing",
+    "test:cloud":   "k6 run --out cloud scripts/scenarios/home_page.js",
+    "report:slow":  "grep SLOW_REPORT k6-output.log | jq '.'",
+    "report:summary": "grep LOCALE_SUMMARY k6-output.log | jq '.'"
+  },
+  "keywords": ["k6", "performance-testing", "browser-mode", "grafana", "load-testing"],
+  "author": "Dzmitry Yaromin",
+  "license": "MIT"
+}

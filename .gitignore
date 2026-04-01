@@ -1,0 +1,6 @@
+.env
+*.log
+node_modules/
+reports/output/
+k6-output.log
+summary.json

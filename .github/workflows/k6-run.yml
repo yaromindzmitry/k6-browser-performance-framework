@@ -1,0 +1,71 @@
+name: k6 Browser Performance Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: 'Scenario to run'
+        required: true
+        default: 'home_page'
+        type: choice
+        options:
+          - home_page
+          - search_page
+          - listing_page
+      locale:
+        description: 'Locale (leave empty for all)'
+        required: false
+        default: ''
+      iterations:
+        description: 'Iterations per VU'
+        required: false
+        default: '15'
+  schedule:
+    # Run daily at 06:00 UTC
+    - cron: '0 6 * * *'
+
+jobs:
+  k6-performance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          curl https://github.com/grafana/k6/releases/download/v0.52.0/k6-v0.52.0-linux-amd64.tar.gz -L | tar xvz
+          sudo mv k6-v0.52.0-linux-amd64/k6 /usr/local/bin
+
+      - name: Install Chromium (for Browser Mode)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y chromium-browser
+
+      - name: Run k6 scenario
+        env:
+          K6_BROWSER_ENABLED: 'true'
+          K6_CLOUD_TOKEN:     ${{ secrets.K6_CLOUD_TOKEN }}
+          LOCALE:             ${{ github.event.inputs.locale }}
+          ITERATIONS:         ${{ github.event.inputs.iterations || '15' }}
+        run: |
+          SCENARIO=${{ github.event.inputs.scenario || 'home_page' }}
+          k6 run scripts/scenarios/${SCENARIO}.js \
+            --out cloud \
+            2>&1 | tee k6-output.log
+
+      - name: Parse SLOW_REPORT entries
+        if: always()
+        run: |
+          echo "=== SLOW PAGES ==="
+          grep SLOW_REPORT k6-output.log | jq '.' || echo "No slow pages detected"
+          echo "=== LOCALE SUMMARY ==="
+          grep LOCALE_SUMMARY k6-output.log | jq '.[0]' || echo "No summary found"
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-output-${{ github.run_id }}
+          path: k6-output.log
+          retention-days: 30
