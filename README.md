@@ -166,6 +166,9 @@ During the original engagement, this framework identified:
 - Threshold breaches isolated to specific locale/page combinations
 
 *(Detailed client report delivered separately under NDA.)*
+## Dashboard Preview
+
+![k6 Grafana Cloud Dashboard](./docs/dashboard-preview.png)
 
 ---
 
@@ -244,6 +247,9 @@ grep LOCALE_SUMMARY k6-output.log | jq '.'
 - Превышение порогов изолировано по конкретным комбинациям локаль/страница
 
 *(Подробный отчёт передан клиенту в рамках NDA.)*
+## Dashboard Preview
+
+![k6 Grafana Cloud Dashboard](./docs/dashboard-preview.png)
 
 ---
 
